@@ -15,6 +15,10 @@ export default function Card({
 }) {
 	const { setNodeRef, attributes, listeners, transform } = useSortable({
 		id: `card-${cardId}`,
+		data: {
+			type: "card",
+			columnId: columnId,
+		},
 	});
 	let isDragging = false;
 	if (!!activeId) {
@@ -36,7 +40,7 @@ export default function Card({
 			style={styles}
 			{...attributes}
 			{...listeners}
-			className="bg-white flex flex-col min-h-[60] rounded-lg m-2 cursor-grab hover:shadow-lg hover:shadow-gray-200 transition-shadow duration-400"
+			className={`bg-white flex flex-col min-h-[60] rounded-lg m-2 cursor-grab hover:shadow-lg hover:shadow-gray-200 transition-shadow duration-400`}
 		>
 			{!isDragging ? (
 				<div className="p-2">Card: {title}</div>
