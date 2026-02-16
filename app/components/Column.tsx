@@ -1,20 +1,18 @@
 "use client";
-import { DndContext, useDroppable } from "@dnd-kit/core";
-import {
-	SortableContext,
-	useSortable,
-	verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { useDroppable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 export default function Column({
 	children,
 	columnId,
+	overId,
 	activeId,
 	columnTitle,
 }: {
 	children: React.ReactNode;
 	columnId: number;
+	overId: string;
 	columnTitle: string;
 	activeId: string;
 }) {
@@ -22,10 +20,10 @@ export default function Column({
 	if (!!activeId) {
 		const matches = activeId.match(/column-(\d+)/);
 		if (matches != null) {
-			isDragging = parseInt(matches[1]) == columnId;
+			isDragging = parseInt(matches[1]) === columnId;
 		}
 	}
-
+	const isOver = parseInt(overId) === columnId;
 	const {
 		setNodeRef: setSortableRef,
 		attributes,
@@ -33,16 +31,22 @@ export default function Column({
 		transform,
 	} = useSortable({
 		id: `column-${columnId}`,
+		data: {
+			type: "column",
+		},
 	});
 	const { setNodeRef: setDroppableRef } = useDroppable({
 		id: `column-${columnId}`,
+		data: {
+			type: "column",
+		},
 	});
 	const styles = {
 		transform: CSS.Translate.toString(transform),
 		backgroundColor: isDragging ? "lightgray" : "#f4f6f8",
-		borderWidth: isDragging ? "3px" : "0",
-		borderColor: isDragging ? "gray" : "transparent",
-		borderStyle: isDragging ? "dashed" : "solid",
+		borderWidth: isDragging || isOver ? "3px" : "0",
+		borderColor: isDragging || isOver ? "gray" : "transparent",
+		borderStyle: isDragging || isOver ? "dashed" : "solid",
 	};
 	return (
 		<div
@@ -53,7 +57,7 @@ export default function Column({
 			style={styles}
 			{...attributes}
 			{...listeners}
-			className="rounded-lg cursor-grab min-w-xs min-h-full flex flex-col gap-2"
+			className="rounded-lg cursor-grab min-w-xs overflow-y-scroll min-h-full flex flex-col gap-2"
 		>
 			{!isDragging && <div className="px-4 py-2 font-bold">{columnTitle}</div>}
 			{!isDragging && children}
